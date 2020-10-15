@@ -24,8 +24,83 @@ Examples
 
 First example is creation of simple allocator.
 
-Allocator allocator;
+   Code:
+
+    Allocator allocator;
     allocator.init(140);
     allocator.mem_dump();
     
+   Result:
     
+   ![Test Image 1](images/step_1.png)
+   
+Second example is allocating some piece of memory.
+
+   Code:
+
+    Allocator allocator;
+    allocator.init(140);
+    void* adr1 = allocator.mem_alloc(10);
+    void* adr2 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
+    void* adr4 = allocator.mem_alloc(10);
+    allocator.mem_dump(); 
+    
+   Result:
+    
+   ![Test Image 1](images/step_2.png)
+   
+Third example is free of memory.
+
+   Code:
+
+    Allocator allocator;
+    allocator.init(140);
+    void* adr1 = allocator.mem_alloc(10);
+    void* adr2 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
+    void* adr4 = allocator.mem_alloc(10);
+    allocator.mem_free(adr4);
+    allocator.mem_free(adr2);
+    allocator.mem_free(adr3);
+    allocator.mem_dump();
+    
+   Result:
+    
+   ![Test Image 1](images/step_3.png)
+   
+Fourth example is reallocation of memory(biger block).
+
+   Code:
+
+    Allocator allocator;
+    allocator.init(140);
+    void* adr1 = allocator.mem_alloc(10);
+    void* adr2 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
+    void* adr4 = allocator.mem_alloc(10);
+    allocator.mem_free(adr3);
+    allocator.mem_realloc(adr2, 14);
+    allocator.mem_dump();
+    
+   Result:
+    
+   ![Test Image 1](images/step_4.png)
+   
+Fourth example is reallocation of memory(smaller block).
+
+   Code:
+
+    Allocator allocator;
+    allocator.init(140);
+    void* adr1 = allocator.mem_alloc(10);
+    void* adr2 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
+    void* adr4 = allocator.mem_alloc(10);
+    allocator.mem_free(adr3);
+    allocator.mem_realloc(adr2, 8);
+    allocator.mem_dump();
+    
+   Result:
+    
+   ![Test Image 1](images/step_5.png)

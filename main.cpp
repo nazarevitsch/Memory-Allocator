@@ -103,6 +103,7 @@ void Allocator::mem_dump() {
     size_t handle = 8 + header->size;
     while (true) {
         if (handle <= this->size) {
+            cout << "Block\n" << endl;
 //            cout << "HEADER Size:  " << 8 << endl;
             cout << "HEADER USED:  " << (int)header->used << endl;
             cout << "MEMORY SIZE OF THIS BLOCK:  " << header->size << endl;
@@ -159,21 +160,12 @@ size_t Allocator::align(size_t size) {
 int main() {
     Allocator allocator;
     allocator.init(140);
+    void* adr1 = allocator.mem_alloc(10);
+    void* adr2 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
+    void* adr4 = allocator.mem_alloc(10);
+    allocator.mem_free(adr3);
+    allocator.mem_realloc(adr2, 8);
     allocator.mem_dump();
-//    void* adr1 = allocator.mem_alloc(10);
-//    void* adr2 = allocator.mem_alloc(10);
-//    void* adr3 = allocator.mem_alloc(32);
-//    void* adr4 = allocator.mem_alloc(10);
-//    cout << "First!" << endl;
-//    allocator.mem_dump();
-////    allocator.mem_free(adr4);
-////    allocator.mem_free(adr2);
-//    allocator.mem_free(adr3);
-////    allocator.mem_free(adr1);
-//    cout << "Second!" << endl;
-//    allocator.mem_dump();
-//    allocator.mem_realloc(adr2, 8);
-//    cout << "Third!" << endl;
-//    allocator.mem_dump();
     return 0;
 }
