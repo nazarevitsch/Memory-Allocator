@@ -72,8 +72,15 @@ void* Allocator::mem_realloc(void* adr, size_t size){
         uint8_t * start = (uint8_t*) adr;
         Header* currentHeader = (Header*)(start - 8);
         Header* nextHeader = (Header*)(start + currentHeader->size);
-        if (nextHeader->size == 0 && align(size) < currentHeader->size + nextHeader->size - 4){
-//            currentHeader->size = align(size);
+        if (nextHeader->used == 0 && align(size) < currentHeader->size + nextHeader->size - 4){
+            Header* next_next_header = (Header*)(((uint8_t*)(nextHeader)) + 8 + nextHeader->size);
+            uint16_t size_next_header = nextHeader->size - (align(size) - currentHeader->size);
+            currentHeader->size = align(size);
+            nextHeader = (Header*)((uint8_t*)start + align(size));
+            create_header(nextHeader, 0, size_next_header, align(size));
+            if ((uint8_t*)next_next_header < finish) {
+                next_next_header->previous_size = nextHeader->size;
+            }
         } else {
             void *answer = mem_alloc(size);
             if (answer != NULL) {
@@ -151,17 +158,21 @@ size_t Allocator::align(size_t size) {
 
 int main() {
     Allocator allocator;
-    allocator.init(100);
+    allocator.init(140);
     void* adr1 = allocator.mem_alloc(10);
     void* adr2 = allocator.mem_alloc(10);
-    void* adr3 = allocator.mem_alloc(10);
+    void* adr3 = allocator.mem_alloc(32);
     void* adr4 = allocator.mem_alloc(10);
-//    cout << "First!" << endl;
-//    allocator.mem_dump();
+    cout << "First!" << endl;
+    allocator.mem_dump();
 //    allocator.mem_free(adr4);
-    allocator.mem_free(adr2);
-//    allocator.mem_free(adr3);
-    allocator.mem_free(adr1);
+//    allocator.mem_free(adr2);
+    allocator.mem_free(adr3);
+//    allocator.mem_free(adr1);
+    cout << "Second!" << endl;
+    allocator.mem_dump();
+    allocator.mem_realloc(adr2, 8);
+    cout << "Third!" << endl;
     allocator.mem_dump();
     return 0;
 }
