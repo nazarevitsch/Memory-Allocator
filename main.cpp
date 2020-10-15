@@ -103,18 +103,18 @@ void Allocator::mem_dump() {
     size_t handle = 8 + header->size;
     while (true) {
         if (handle <= this->size) {
-            cout << "HEADER Size:  " << 8 << endl;
+//            cout << "HEADER Size:  " << 8 << endl;
             cout << "HEADER USED:  " << (int)header->used << endl;
             cout << "MEMORY SIZE OF THIS BLOCK:  " << header->size << endl;
             cout << "MEMORY SIZE OF PREVIOUS BLOCK: " << header->previous_size << endl;
             uint8_t* pp = (uint8_t*)header;
-            for (size_t i = 0; i < 8; i++) {
-                cout << "I: " << i << ",  P: " << (uint8_t **) (pp + i) << endl;
-            }
-            cout << "MEMORY SIZE:  " << header->size << endl;
-            for (size_t i = 0; i < header->size; i++) {
-                cout << "I: " << i << ",  P: " << (uint8_t **) (pp + 8 + i) << endl;
-            }
+//            for (size_t i = 0; i < 8; i++) {
+//                cout << "I: " << i << ",  P: " << (uint8_t **) (pp + i) << endl;
+//            }
+//            cout << "MEMORY SIZE:  " << header->size << endl;
+//            for (size_t i = 0; i < header->size; i++) {
+//                cout << "I: " << i << ",  P: " << (uint8_t **) (pp + 8 + i) << endl;
+//            }
             if (handle == this->size){
                 break;
             } else {
@@ -159,20 +159,21 @@ size_t Allocator::align(size_t size) {
 int main() {
     Allocator allocator;
     allocator.init(140);
-    void* adr1 = allocator.mem_alloc(10);
-    void* adr2 = allocator.mem_alloc(10);
-    void* adr3 = allocator.mem_alloc(32);
-    void* adr4 = allocator.mem_alloc(10);
-    cout << "First!" << endl;
     allocator.mem_dump();
-//    allocator.mem_free(adr4);
-//    allocator.mem_free(adr2);
-    allocator.mem_free(adr3);
-//    allocator.mem_free(adr1);
-    cout << "Second!" << endl;
-    allocator.mem_dump();
-    allocator.mem_realloc(adr2, 8);
-    cout << "Third!" << endl;
-    allocator.mem_dump();
+//    void* adr1 = allocator.mem_alloc(10);
+//    void* adr2 = allocator.mem_alloc(10);
+//    void* adr3 = allocator.mem_alloc(32);
+//    void* adr4 = allocator.mem_alloc(10);
+//    cout << "First!" << endl;
+//    allocator.mem_dump();
+////    allocator.mem_free(adr4);
+////    allocator.mem_free(adr2);
+//    allocator.mem_free(adr3);
+////    allocator.mem_free(adr1);
+//    cout << "Second!" << endl;
+//    allocator.mem_dump();
+//    allocator.mem_realloc(adr2, 8);
+//    cout << "Third!" << endl;
+//    allocator.mem_dump();
     return 0;
 }
