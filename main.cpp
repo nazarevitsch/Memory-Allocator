@@ -10,6 +10,7 @@ struct Header{
 class Allocator{
 public:
     uint8_t* start;
+    uint8_t* finish;
     size_t size;
     Allocator();
     void init(size_t size);
@@ -35,6 +36,7 @@ void Allocator::create_header(void* start, uint8_t used, uint16_t size, uint16_t
 void Allocator::init(size_t size) {
     size_t size_buffer = sizeof(char) * size;
     start = (uint8_t *)malloc(size_buffer);
+    finish = start + size - 1;
     this->size = size;
     create_header(start, 0, size - 8, 0);
 }
@@ -67,11 +69,18 @@ void* Allocator::mem_realloc(void* adr, size_t size){
     if (adr == NULL){
         return mem_alloc(size);
     } else{
-        void* answer = mem_alloc(size);
-        if (answer != NULL){
-            mem_free(adr);
+        uint8_t * start = (uint8_t*) adr;
+        Header* currentHeader = (Header*)(start - 8);
+        Header* nextHeader = (Header*)(start + currentHeader->size);
+        if (nextHeader->size == 0 && align(size) < currentHeader->size + nextHeader->size - 4){
+//            currentHeader->size = align(size);
+        } else {
+            void *answer = mem_alloc(size);
+            if (answer != NULL) {
+                mem_free(adr);
+            }
+            return answer;
         }
-        return answer;
     }
 }
 
@@ -111,22 +120,24 @@ void Allocator::mem_dump() {
 }
 
 void Allocator::unite(void* adr) {
-    cout << adr << endl;
     uint8_t *start = (uint8_t *) adr;
     Header *current_header = (Header *) (start - 8);
-    cout << "C.H:  " << current_header << endl;
     Header *previous_header = NULL;
-    Header *next_header = NULL;
+    Header *next_header = (Header*)(((uint8_t *) current_header) + current_header->size + 8);
     if (current_header > (Header *) (uint8_t **) this->start) {
         previous_header = (Header *) (start - 16 - current_header->previous_size);
         if (previous_header->used == 0) {
             previous_header->size = previous_header->size + 8 + current_header->size;
             current_header = previous_header;
+            next_header->previous_size = current_header->size;
         }
     }
-    next_header = (Header*)(((uint8_t *) current_header) + current_header->size + 8);
     if (next_header->used == 0) {
+        Header* next_next_header = (Header*)(((uint8_t*)next_header) + 8 + next_header->size);
         current_header->size = current_header->size + 8 + next_header->size;
+        if ((uint8_t*)next_next_header < this->finish){
+            next_next_header->previous_size = current_header->size;
+        }
     }
 }
 
@@ -138,15 +149,19 @@ size_t Allocator::align(size_t size) {
     }
 }
 
-
 int main() {
     Allocator allocator;
     allocator.init(100);
     void* adr1 = allocator.mem_alloc(10);
     void* adr2 = allocator.mem_alloc(10);
     void* adr3 = allocator.mem_alloc(10);
+    void* adr4 = allocator.mem_alloc(10);
+//    cout << "First!" << endl;
+//    allocator.mem_dump();
+//    allocator.mem_free(adr4);
     allocator.mem_free(adr2);
-    allocator.mem_free(adr3);
+//    allocator.mem_free(adr3);
+    allocator.mem_free(adr1);
     allocator.mem_dump();
     return 0;
 }
